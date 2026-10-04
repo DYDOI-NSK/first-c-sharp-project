@@ -1,3 +1,7 @@
 {
-    "dotnet.defaultSolution": "FirstProject.sln"
+    "dotnet.defaultSolution": "FirstProject.sln",
+    "[csharp]": {
+        "editor.defaultFormatter": "csharpier.csharpier-vscode",
+        "editor.formatOnSave": true
+},
 }
