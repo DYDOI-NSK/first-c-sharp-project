@@ -1,85 +1,37 @@
-﻿interface IMathExpController
-{
-    void updateMathExp(string? value);
-    string getMathExp();
-    string getResult();
-}
-
-class MathExpControllerImpl(Action<string?> update, Func<string> get, Func<string> getFullResult)
-    : IMathExpController
-{
-    public void updateMathExp(string? value) => update(value);
-
-    public string getMathExp() => get();
-
-    public string getResult() => getFullResult();
-}
-
-namespace FirstProject
+﻿namespace FirstProject
 {
     class Program
     {
         static void Main(string[] args)
         {
-            MathExpControllerImpl expControlls = createMathExp()();
+            bool running = true;
+            Calculator.Entity calculator = new Calculator.Entity();
+            ConsoleManager.Controller.onConsoleClear += () => displayMathExpression(calculator);
 
-            string? firstInput = getUserNumber();
-            updateConsole(expControlls, firstInput);
-            string? secondInput = getUserNumber();
-            updateConsole(expControlls, secondInput);
-
-            Console.Clear();
-            Console.WriteLine(expControlls.getResult());
-        }
-
-        static Func<MathExpControllerImpl> createMathExp()
-        {
-            List<string> mathExp = [];
-
-            string get()
+            while (running)
             {
-                return string.Join(" + ", mathExp);
+                string? input = ConsoleManager.Controller.getUserNumber();
+
+                running = !submited(input);
+
+                if (!running)
+                {
+                    return;
+                }
+
+                calculator.addValue(input);
+                ConsoleManager.Controller.updateConsole();
             }
-
-            return () =>
-                new MathExpControllerImpl(
-                    update: (value) =>
-                    {
-                        if (value == null)
-                        {
-                            return;
-                        }
-
-                        mathExp.Add(value);
-                    },
-                    get,
-                    getFullResult: () =>
-                    {
-                        List<string> result =
-                        [
-                            get(),
-                            "=",
-                            mathExp
-                                .ConvertAll(element => Convert.ToInt32(element))
-                                .Sum()
-                                .ToString(),
-                        ];
-                        return string.Join(" ", result);
-                    }
-                );
         }
 
-        static void updateConsole(MathExpControllerImpl expController, string? value)
+        static void displayMathExpression(Calculator.Entity calculator)
         {
-            Console.Clear();
-            expController.updateMathExp(value);
-            Console.WriteLine(expController.getMathExp());
+            ConsoleManager.Controller.log(calculator.getExpession());
         }
 
-        static string? getUserNumber()
+        static bool submited(string? input)
         {
-            Console.WriteLine("Insert number to add:");
-            return Console.ReadLine();
+            return input == "=";
         }
     }
 }
